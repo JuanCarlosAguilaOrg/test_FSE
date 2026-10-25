@@ -1,0 +1,17 @@
+:root { font-family: system-ui, sans-serif; color: #1a1a1a; background: #f6f7f9; }
+main { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+section { background: #fff; border: 1px solid #dde1e6; border-radius: 8px; padding: 1rem 1.25rem; margin-block: 1rem; }
+progress { width: 100%; height: 1rem; }
+fieldset { border: 1px solid #dde1e6; border-radius: 6px; margin-bottom: 1rem; }
+.prompt { font-size: 1.5rem; font-weight: 600; margin: .5rem 0 1rem; }
+.option { display: flex; gap: .5rem; align-items: center; padding: .4rem 0; cursor: pointer; }
+.theory { white-space: pre-line; background: #f1f5ff; padding: .75rem 1rem; border-radius: 6px; }
+button { font: inherit; padding: .5rem 1rem; border-radius: 6px; border: 1px solid #2457c5; background: #2457c5; color: #fff; cursor: pointer; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button:focus-visible, input:focus-visible { outline: 3px solid #f5a623; outline-offset: 2px; }
+.banner { padding: .6rem .9rem; border-radius: 6px; border: 1px solid; }
+.banner.success { background: #e8f6ec; border-color: #2e8b4f; }
+.banner.error { background: #fdecec; border-color: #c0392b; }
+.banner.info { background: #eef4ff; border-color: #2457c5; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: .35rem .5rem; border-bottom: 1px solid #e6e9ed; }

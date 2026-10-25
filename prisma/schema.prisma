@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ActivityType {
+  MAIN
+  REINFORCEMENT
+}
+
+enum LearningState {
+  MAIN
+  THEORY
+  REINFORCEMENT
+  COMPLETED
+}
+
+model Topic {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique
+  title      String
+  order      Int      @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  theory     TheoryContent?
+  activities Activity[]
+  attempts   Attempt[]
+  completion TopicCompletion?
+  progress   LearningProgress[]
+}
+
+model TheoryContent {
+  id        Int      @id @default(autoincrement())
+  topicId   Int      @unique
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  topic Topic @relation(fields: [topicId], references: [id])
+}
+
+model Activity {
+  id        Int          @id @default(autoincrement())
+  code      String       @unique
+  topicId   Int
+  type      ActivityType
+  prompt    String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  topic    Topic            @relation(fields: [topicId], references: [id])
+  options  ActivityOption[]
+  attempts Attempt[]
+
+  // Una actividad principal y una de refuerzo por tema (v1).
+  @@unique([topicId, type])
+}
+
+model ActivityOption {
+  id         Int     @id @default(autoincrement())
+  activityId Int
+  key        String
+  text       String
+  // Privado: nunca se serializa en la API pública.
+  isCorrect  Boolean @default(false)
+
+  activity Activity @relation(fields: [activityId], references: [id])
+
+  @@unique([activityId, key])
+}
+
+model LearningProgress {
+  id             String        @id // singleton: "main"
+  state          LearningState
+  currentTopicId Int
+  // Control de concurrencia optimista.
+  version        Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  currentTopic Topic @relation(fields: [currentTopicId], references: [id])
+}
+
+model Attempt {
+  id             Int      @id @default(autoincrement())
+  activityId     Int
+  topicId        Int
+  selectedOption String
+  isCorrect      Boolean
+  createdAt      DateTime @default(now())
+
+  activity Activity @relation(fields: [activityId], references: [id])
+  topic    Topic    @relation(fields: [topicId], references: [id])
+
+  @@index([createdAt])
+}
+
+// PK = topicId: un tema solo puede completarse una vez.
+model TopicCompletion {
+  topicId     Int      @id
+  completedAt DateTime @default(now())
+
+  topic Topic @relation(fields: [topicId], references: [id])
+}
